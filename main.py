@@ -75,23 +75,19 @@ DefPorts(ports_B, 1)
 # -------------       End       ----------------#
 
 def StepOnB():
-    tempLAG = [set() for i in range(50)]
-    trash.clear()
+    tempLAG = [set() for i in range(100)]
 
     for port in ports_A:
         portB = port.connectWith
         LAG = port.LAG
         if not_connect_B[portB].isdisjoint(tempLAG[LAG]):
             tempLAG[LAG].add(portB)
-            if port.state == OUT_OF_SYNC:
-                trash.append(port)
             port.state = IN_SYNC
         else:
             port.state = OUT_OF_SYNC
 
-
-def FirstStep():
-    global countOfLAG, current_ports, high_index, current_LAG
+def FirstStep(current_ports, high_index, current_LAG):
+    global countOfLAG
 
     if len(current_ports) == 0:
         return
@@ -105,26 +101,34 @@ def FirstStep():
         countOfLAG += 1
 
     if ports_A[port].state and not_connect_A[port].isdisjoint(LAGs[current_LAG]):
+        LAGs[current_LAG].add(port)
+        ports_A[port].LAG = current_LAG
+        current_ports.remove(port)
+        high_index -= 1
         SecondStep(current_ports, high_index, current_LAG)
     else:
         ports_A[port].LAG = current_LAG
         current_ports.remove(port)
         for p in current_ports:
-            ports_A[p].LAG = ports_A[p].LAG + 1
+            ports_A[p].LAG = ports_A[p].LAG + 1 #ports_A[port].state
         FirstStep(current_ports, 0, current_LAG + 1)
 
-def SecondStep():
-    global countOfLAG, current_ports, high_index, current_LAG
+def SecondStep(current_ports, high_index, current_LAG):
 
     high_index += 1
     if high_index < len(current_ports):
-        ThirdStep(current_ports, high_index, current_LAG, port)
+        ThirdStep(current_ports, high_index, current_LAG)
     else:
-        if len(current_ports - LAGs[current_LAG]):
-            FirstStep(current_ports - LAGs[current_LAG], 0, current_LAG + 1)
+        tmp = set()
+        for p in current_ports:
+            if ports_A[p].state == 0 and not not_connect_A[p].isdisjoint(LAGs[current_LAG]):
+                ports_A[p].LAG += 1
+            if ports_A[p].LAG != current_LAG and ports_A[p].state:
+                tmp.add(p)
+        if len(tmp):
+            FirstStep(tmp, 0, current_LAG + 1)
 
-def ThirdStep():
-    global countOfLAG, current_ports, high_index, current_LAG
+def ThirdStep(current_ports, high_index, current_LAG):
 
     port = list(current_ports)
     port.sort()
@@ -139,15 +143,14 @@ def ThirdStep():
         SecondStep(current_ports, high_index, current_LAG)
 
     if ports_A[port].state == OUT_OF_SYNC:
-        ports_A[port].LAG = ports_A[port].LAG + 1
+        ports_A[port].LAG += 1
         SecondStep(current_ports, high_index, current_LAG)
 
     if ports_A[port].state and not not_connect_A[port].isdisjoint(LAGs[current_LAG]):
-        ports_A[port].LAG = ports_A[port].LAG + 1
-        FourthStep(current_ports, high_index, current_LAG)
+        ports_A[port].LAG += 1
+        SecondStep(current_ports, high_index, current_LAG)
 
-def FourthStep():
-    global countOfLAG, current_ports, high_index, current_LAG
+def FourthStep(current_ports, high_index, current_LAG):
 
     high_index += 1
     if high_index < len(current_ports):
@@ -158,15 +161,13 @@ def FourthStep():
             if ports_A[p].LAG == current_LAG:
                 tmp.add(p)
             if len(tmp):
-                FirstStep(tmp, 0, current_LAG)
+                ThirdStep(tmp, 0, current_LAG)
 
-def FifthStep():
-    global countOfLAG, current_ports, high_index, current_LAG
+def FifthStep(current_ports, high_index, current_LAG):
 
     port = list(current_ports)
     port.sort()
     port = port[high_index]
-    global countOfLAG
 
     if not_connect_A[port].isdisjoint(LAGs[current_LAG]):
         SecondStep(current_ports, high_index, current_LAG)
@@ -179,51 +180,37 @@ def RewriteLAGonPort():
     for i, ports in enumerate(LAGs):
         for port in ports:
             ports_A[port].LAG = i
+        ports.clear()
 
 n = set()
 for port in ports_A:
     n.add(port.number)
 
-current_ports = n.copy()
-high_index = 0
-current_LAG = 0
-
 StepOnB()
-step = FirstStep()
-
-if step:
-    step = SecondStep()
-
-else:
-    while(FirstStep()):
-        continue
-
-
-RewriteLAGonPort()
+FirstStep(n.copy(), 0, 0)
+#RewriteLAGonPort()
 WriteInFile(ports_A, "Ports")
 #"""
-StepOnB()
-WriteInFile(ports_A, "Ports v.2")
-#FirstStep(n.copy(), 0, 0)
 
-for port in trash:
-    if not_connect_A[port.number].isdisjoint(LAGs[port.LAG]):
-        LAGs[current_LAG].add(port.number)
+for i in range(6):
+    StepOnB()
+    for i in range(len(LAGs)):
+        n -= LAGs[i]
+    WriteInFile(ports_A, "Ports v.2")
+    FirstStep(n.copy(), 0, 0)
 
-#WriteInFile(ports_A, "Ports v.3")
 
 dd = open("Result1", 'w')
 for lag in LAGs:
     dd.write(lag.__str__() + "\n")
 dd.close()
 
-for i in range(9):
-    for j in range(9):
-        if(i != j):
-            print(i, j, LAGs[i] & LAGs[j])
-
 length = 0
-for i in range(10):
+for i in range(len(LAGs)):
     length += len(LAGs[i])
 print(length)
 
+d = 0
+for p in ports_A:
+    d += p.state
+print(d)
