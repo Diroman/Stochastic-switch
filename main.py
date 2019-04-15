@@ -26,7 +26,7 @@ ports_A = [0 for i in  range(117)]
 ports_B = [0 for i in  range(117)]
 not_connect_A = [set() for i in range(117)]
 not_connect_B = [set() for i in range(117)]
-LAGs = [set()]
+LAGs = [set() for i in range(10)]
 trash = []
 
 class Port:
@@ -107,14 +107,13 @@ def FirstStep(current_ports, high_index, current_LAG):
         LAGs.append(set())
         countOfLAG += 1
 
-    if ports_A[port].state and not_connect_A[port].isdisjoint(LAGs[current_LAG]):
-        LAGs[current_LAG].add(port)
-        ports_A[port].LAG = current_LAG
+    if ports_A[port].state and not_connect_A[port].isdisjoint(LAGs[ports_A[port].LAG]):
+        LAGs[ports_A[port].LAG].add(port)
+        ports_A[port].LAG = ports_A[port].LAG
         current_ports.remove(port)
         SecondStep(current_ports, high_index, current_LAG)
     else:
         ports_A[port].LAG = current_LAG
-        #current_ports.remove(port)
         buf = set()
         for p in LAGs[current_LAG]:
             ports_A[p].LAG += 1
@@ -142,9 +141,9 @@ def ThirdStep(current_ports, high_index, current_LAG):
     port = port[high_index]
     global countOfLAG
 
-    if ports_A[port].state and not_connect_A[port].isdisjoint(LAGs[current_LAG]):
-        LAGs[current_LAG].add(port)
-        ports_A[port].LAG = current_LAG
+    if ports_A[port].state and not_connect_A[port].isdisjoint(LAGs[ports_A[port].LAG]):
+        LAGs[ports_A[port].LAG].add(port)
+        ports_A[port].LAG = ports_A[port].LAG
         current_ports.remove(port)
         high_index -= 1
         SecondStep(current_ports, high_index, current_LAG)
@@ -153,7 +152,7 @@ def ThirdStep(current_ports, high_index, current_LAG):
         ports_A[port].LAG += 1
         SecondStep(current_ports, high_index, current_LAG)
 
-    if ports_A[port].state and not not_connect_A[port].isdisjoint(LAGs[current_LAG]):
+    if ports_A[port].state and not not_connect_A[port].isdisjoint(LAGs[ports_A[port].LAG]):
         ports_A[port].LAG += 1
         FourthStep(current_ports, high_index, current_LAG)
 
@@ -186,15 +185,57 @@ n = set()
 for port in ports_A:
     n.add(port.number)
 
-for i in range(3):
+for i in range(12):
     StepOnB()
+    for lag in LAGs:
+        lag.clear()
     FirstStep(n.copy(), 0, 0)
 
-dd = open("Result1", 'w')
-for lag in LAGs:
-    dd.write(lag.__str__() + "\n")
+def Processing(mass):
+    for i, lag in enumerate(mass):
+        lg = list(lag)
+        lg.sort()
+        mass[i] = lg
+    return mass
+
+def CreateLAGforB():
+    temp = []
+    for i, lag in enumerate(LAGs):
+        temp.append([])
+        for port in lag:
+            temp[i].append(ports_A[port].connectWith)
+    return temp
+
+def PrintResult(mass):
+    st = ""
+    for lag in mass:
+        for port in lag:
+            st += str(port) + ","
+        st = st[:-1] + '|'
+    print(st[:-1])
+
+
+del LAGs[15]
+del LAGs[17]
+LAGs = Processing(LAGs)
+LAGs_B = Processing(CreateLAGforB())
+
+LAGs.sort(key=lambda val: val[0])
+LAGs_B.sort(key=lambda val: val[0])
+
+PrintResult(LAGs)
+PrintResult(LAGs_B)
+
+dd = open("Result_A", 'w')
+db = open("Result_B", 'w')
+for i in range(len(LAGs)):
+    dd.write(LAGs[i].__str__() + "\n")
+    db.write(LAGs_B[i].__str__() + "\n")
 dd.close()
-WriteInFile(ports_A, "Ports v.3")
+db.close()
+
+"""
+#WriteInFile(ports_A, "Ports v.3")
 
 length = 0
 for i in range(len(LAGs)):
@@ -205,3 +246,4 @@ d = 0
 for p in ports_A:
     d += p.state
 print("Active ports: ", d)
+"""
