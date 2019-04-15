@@ -48,7 +48,7 @@ LAG: 2
 
 Number: 12
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 13
 State: 1
@@ -64,11 +64,11 @@ LAG: 0
 
 Number: 16
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 17
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 18
 State: 1
@@ -88,7 +88,7 @@ LAG: 1
 
 Number: 22
 State: 0
-LAG: 2
+LAG: 0
 
 Number: 23
 State: 0
@@ -100,7 +100,7 @@ LAG: 0
 
 Number: 25
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 26
 State: 1
@@ -120,7 +120,7 @@ LAG: 1
 
 Number: 30
 State: 0
-LAG: 2
+LAG: 0
 
 Number: 31
 State: 1
@@ -156,7 +156,7 @@ LAG: 0
 
 Number: 39
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 40
 State: 1
@@ -192,7 +192,7 @@ LAG: 1
 
 Number: 48
 State: 0
-LAG: 2
+LAG: 0
 
 Number: 49
 State: 0
@@ -228,11 +228,11 @@ LAG: 2
 
 Number: 57
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 58
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 59
 State: 0
@@ -252,7 +252,7 @@ LAG: 2
 
 Number: 63
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 64
 State: 0
@@ -268,7 +268,7 @@ LAG: 2
 
 Number: 67
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 68
 State: 0
@@ -280,7 +280,7 @@ LAG: 2
 
 Number: 70
 State: 1
-LAG: 1
+LAG: 0
 
 Number: 71
 State: 1
@@ -300,11 +300,11 @@ LAG: 1
 
 Number: 75
 State: 0
-LAG: 1
+LAG: 0
 
 Number: 76
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 77
 State: 0
@@ -320,15 +320,15 @@ LAG: 1
 
 Number: 80
 State: 0
-LAG: 1
+LAG: 0
 
 Number: 81
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 82
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 83
 State: 0
@@ -340,7 +340,7 @@ LAG: 0
 
 Number: 85
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 86
 State: 1
@@ -352,7 +352,7 @@ LAG: 2
 
 Number: 88
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 89
 State: 1
@@ -376,7 +376,7 @@ LAG: 1
 
 Number: 94
 State: 0
-LAG: 1
+LAG: 0
 
 Number: 95
 State: 0
@@ -396,7 +396,7 @@ LAG: 1
 
 Number: 99
 State: 0
-LAG: 1
+LAG: 0
 
 Number: 100
 State: 0
@@ -408,7 +408,7 @@ LAG: 2
 
 Number: 102
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 103
 State: 0
@@ -444,11 +444,11 @@ LAG: 2
 
 Number: 111
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 112
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 113
 State: 1
@@ -456,7 +456,7 @@ LAG: 0
 
 Number: 114
 State: 0
-LAG: 1
+LAG: 2
 
 Number: 115
 State: 0
