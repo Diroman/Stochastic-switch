@@ -2,10 +2,7 @@
 OUT_OF_SYNC = 0
 IN_SYNC = 1
 countOfLAG = 1
-
-step_count = 0
-max_step_count = 100000000000000
-
+# ------------- Initialization  ----------------#
 connect = [[0, 81], [1, 1], [2, 50], [3, 56], [4, 0], [5, 46], [6, 80], [7, 44], [8, 65],
            [9, 84], [10, 39], [11, 66], [12, 105], [13, 63], [14, 100], [15, 79], [16, 58],
            [17, 77], [18, 25], [19, 8], [20, 112], [21, 57], [22, 52], [23, 82], [24, 92],
@@ -21,13 +18,11 @@ connect = [[0, 81], [1, 1], [2, 50], [3, 56], [4, 0], [5, 46], [6, 80], [7, 44],
            [97, 18], [98, 98], [99, 7], [100, 89], [101, 64], [102, 34], [103, 94], [104, 24],
            [105, 27], [106, 32], [107, 74], [108, 10], [109, 62], [110, 14], [111, 111], [112, 75],
            [113, 31], [114, 90], [115, 36], [116, 42]]
-
 ports_A = [0 for i in  range(117)]
 ports_B = [0 for i in  range(117)]
 not_connect_A = [set() for i in range(117)]
 not_connect_B = [set() for i in range(117)]
 LAGs = [set() for i in range(10)]
-trash = []
 
 class Port:
     def __init__(self, num, con):
@@ -40,13 +35,7 @@ class Port:
         out  = "Number: " + str(self.number) + "\n"
         out += "State: " + str(self.state) + "\n"
         out += "LAG: " + str(self.LAG) + "\n"
-        #out += "Connected with: " + str(self.connectWith) + "\n"
         return out
-
-    def IncLAG(self):
-        self.LAG += 1
-        if self.LAG > countOfLAG:
-            countOfLAG = self.LAG
 
 def ReadNotConnect(list, filename):
     file = open(filename, 'r')
@@ -70,13 +59,13 @@ def WriteInFile(list, filename):
         out.write(p.__str__())
         out.write("\n")
 
-# ------------- Initialization  ----------------#
 ReadNotConnect(not_connect_A, "NotForA")
 ReadNotConnect(not_connect_B, "NotForB")
 DefPorts(ports_A, 0)
 DefPorts(ports_B, 1)
 # -------------       End       ----------------#
 
+# ---------------- Algorithm -------------------#
 def StepOnB():
     tempLAG = [set() for i in range(100)]
 
@@ -90,11 +79,7 @@ def StepOnB():
             port.state = OUT_OF_SYNC
 
 def FirstStep(current_ports, high_index, current_LAG):
-    global countOfLAG, step_count, max_step_count
-
-    step_count += 1
-    if step_count == max_step_count:
-        return
+    global countOfLAG
 
     if len(current_ports) == 0:
         return
@@ -190,6 +175,8 @@ for i in range(12):
     for lag in LAGs:
         lag.clear()
     FirstStep(n.copy(), 0, 0)
+# ------------        End     ------------------#
+
 
 def Processing(mass):
     for i, lag in enumerate(mass):
@@ -214,6 +201,15 @@ def PrintResult(mass):
         st = st[:-1] + '|'
     print(st[:-1])
 
+def WriteResult():
+    dd = open("Result_A", 'w')
+    db = open("Result_B", 'w')
+    for i in range(len(LAGs)):
+        dd.write(LAGs[i].__str__() + "\n")
+        db.write(LAGs_B[i].__str__() + "\n")
+    dd.close()
+    db.close()
+    WriteInFile(ports_A, "Ports v.3")
 
 del LAGs[15]
 del LAGs[17]
@@ -225,25 +221,4 @@ LAGs_B.sort(key=lambda val: val[0])
 
 PrintResult(LAGs)
 PrintResult(LAGs_B)
-
-dd = open("Result_A", 'w')
-db = open("Result_B", 'w')
-for i in range(len(LAGs)):
-    dd.write(LAGs[i].__str__() + "\n")
-    db.write(LAGs_B[i].__str__() + "\n")
-dd.close()
-db.close()
-
-"""
-#WriteInFile(ports_A, "Ports v.3")
-
-length = 0
-for i in range(len(LAGs)):
-    length += len(LAGs[i])
-print("Count of ports: ", length)
-
-d = 0
-for p in ports_A:
-    d += p.state
-print("Active ports: ", d)
-"""
+WriteResult()
